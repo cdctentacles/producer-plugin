@@ -8,6 +8,8 @@ using Microsoft.ServiceFabric.Data;
 using Microsoft.ServiceFabric.Data.Collections;
 using Microsoft.ServiceFabric.Data.Notifications;
 using Newtonsoft.Json;
+using CDC.EventCollector;
+using System.Reflection;
 
 namespace ProducerPlugin
 {
@@ -15,8 +17,10 @@ namespace ProducerPlugin
     {
         internal ReliableStateManager StateManager;
         private ChangeCollector changeCollector;
+        private long previousLsn = Int32.MinValue;
+        private Guid partitionId;
 
-        internal ServiceFabricSource(IEventCollector collector, IHealthStore healthStore, string sourceName):base (collector, healthStore, IsListeningFromStart, sourceName)
+        internal ServiceFabricSource(IEventCollector collector, IHealthStore healthStore, string sourceName):base (collector, healthStore, sourceName)
         {
             this.SourceType = EnumDefinitions.SourceType.ServiceFabric;
             // Need to find some way to get stateManagerObject here.
@@ -24,21 +28,13 @@ namespace ProducerPlugin
         }
 
 
-        public void RegisterEvenCollector()
+        public void RegisterEventCollector(Guid partitionId)
         {
-
             // Here we registered with the event collector.
+            this.partitionId = partitionId;
             this.StateManager.TransactionChanged += this.OnTransactionChangedHandler;
             this.StateManager.StateManagerChanged += this.OnStateManagerChangedHandler;
         }
-
-        // Hooking code will be here.
-        /**
-         1. Transaction Changed event. 
-          2. Dictionary Changed Event
-        3. StateManagerChanged Event.
-            
-         */
 
         private void OnTransactionChangedHandler(object sender, NotifyTransactionChangedEventArgs e)
         {
@@ -46,25 +42,23 @@ namespace ProducerPlugin
             {
                 // Need to get all the changes and give it to the event collector.
                 var allEvents = changeCollector.GetAllChanges();
-                string events = JsonConvert.SerializeObject(allEvents);
-
                 var trAppliedEvent = new NotifyTransactionAppliedEvent(e.Transaction, allEvents);
-                Byte[] byteStream = Encoding.ASCII.GetBytes(events);
-                EventCollector.PushEventsToEventCollector(trAppliedEvent);
+                string eventString = JsonConvert.SerializeObject(trAppliedEvent);
+                Byte[] byteStream = Encoding.ASCII.GetBytes(eventString);
+                long currentLsn = e.Transaction.CommitSequenceNumber;
+                EventCollector.TransactionApplied(this.partitionId, previousLsn, currentLsn, byteStream);
+                previousLsn = currentLsn;
             }
         }
-
-
 
         public void OnStateManagerChangedHandler(object sender, NotifyStateManagerChangedEventArgs e)
         {
             if (e.Action == NotifyStateManagerChangedAction.Rebuild)
             {
-                this.PushEventsToEventCollector(e);
-                return;
+                throw new NotImplementedException();
             }
 
-            this.ProcessStateManagerSingleEntityNotification(e);
+            ProcessStateManagerSingleEntityNotification(e);
         }
 
         private void ProcessStateManagerSingleEntityNotification(NotifyStateManagerChangedEventArgs e)
@@ -73,44 +67,55 @@ namespace ProducerPlugin
 
             if (operation.Action == NotifyStateManagerChangedAction.Add)
             {
-
-                // Need to have changes here. --> There 
-                if (operation.ReliableState is IReliableDictionary<TKey, TValue>)
+                var reliableStateType = operation.ReliableState.GetType();
+                switch (ReliableStateKindUtils.KindOfReliableState(operation.ReliableState))
                 {
-                    var dictionary = (IReliableDictionary<TKey, TValue>)operation.ReliableState;
-                    dictionary.RebuildNotificationAsyncCallback = this.OnDictionaryRebuildNotificationHandlerAsync;
-                    dictionary.DictionaryChanged += this.OnDictionaryChangedHandler;
-                }
+                    case ReliableStateKind.ReliableDictionary:
+                        {
+                            var keyType = reliableStateType.GetGenericArguments()[0];
+                            var valueType = reliableStateType.GetGenericArguments()[1];
+                            this.GetType().GetMethod("ProcessStateManagerDictionaryChangedNotification", BindingFlags.Instance | BindingFlags.NonPublic)
+                                .MakeGenericMethod(keyType, valueType)
+                                .Invoke(this, new object[] { operation.ReliableState });
+                            break;
+                        }
+                    case ReliableStateKind.ReliableQueue:
+                    case ReliableStateKind.ReliableConcurrentQueue:
+                    default:
+                        break;
 
-                // It could also be Reliable Queue also, but we don't get its events.
+                }
             }
         }
 
+        internal void ProcessStateManagerDictionaryChangedNotification<TKey, TValue>(NotifyStateManagerChangedEventArgs e)
+            where TKey : IComparable<TKey>, IEquatable<TKey>
+        {
+            var operation = e as NotifyStateManagerSingleEntityChangedEventArgs;
+            var dictionary = (IReliableDictionary<TKey, TValue>)operation.ReliableState;
+            dictionary.RebuildNotificationAsyncCallback = this.OnDictionaryRebuildNotificationHandlerAsync;
+            dictionary.DictionaryChanged += this.OnDictionaryChangedHandler;
+        }
 
-        public async Task OnDictionaryRebuildNotificationHandlerAsync(
+        public async Task OnDictionaryRebuildNotificationHandlerAsync<TKey, TValue>(
         IReliableDictionary<TKey, TValue> origin,
         NotifyDictionaryRebuildEventArgs<TKey, TValue> rebuildNotification)
+        where TKey : IComparable<TKey>, IEquatable<TKey>
         {
             this.changeCollector.CreateNew();
-
-
             var enumerator = rebuildNotification.State.GetAsyncEnumerator();
-
-            //Create a new event with dictionary rebuild and add key value pairs to it.
-            // and then, push it to event collector
-            // NotifyDictionaryRebuildEvent.
-            // Add new class RebuildChange.
-            while (await enumerator.MoveNextAsync(CancellationToken.None))
-            {
-                this.EventCollector.Add(enumerator.Current.Key, enumerator.Current.Value);
-            }
+            // We will send the event as it is. But the previousLsn and nextLsn would be -1.
+            var rebuildEvent = new NotifyRebuildEvent<TKey, TValue>(origin.Name.ToString(), rebuildNotification.State);
+            string rebuildEventString = JsonConvert.SerializeObject(rebuildEvent);
+            Byte[] byteStream = Encoding.ASCII.GetBytes(rebuildEventString);
+            EventCollector.TransactionApplied(this.partitionId, -1, -1, byteStream);
         }
 
-        public void OnDictionaryChangedHandler(object sender, NotifyDictionaryChangedEventArgs<TKey, TValue> e)
+        public void OnDictionaryChangedHandler<TKey, TValue>(object sender, NotifyDictionaryChangedEventArgs<TKey, TValue> e)
+        where TKey : IComparable<TKey>, IEquatable<TKey>
         {
             var state = sender as IReliableState;
             this.changeCollector.AddNewEvent(state.Name.ToString(),e);
-            
         }
     }
 }

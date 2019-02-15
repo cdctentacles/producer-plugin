@@ -14,8 +14,6 @@ namespace ProducerPlugin
         internal ChangeCollector()
         {
             wrlock = new object();
-            // new Change collector;
-            // for now do nothing.
         }
       
         internal void CreateNew()
@@ -23,7 +21,6 @@ namespace ProducerPlugin
             lock(wrlock)
             {
                 this.eventDict = new Dictionary<string, List<ReliableCollectionChange>>();
-
             }
         }
 

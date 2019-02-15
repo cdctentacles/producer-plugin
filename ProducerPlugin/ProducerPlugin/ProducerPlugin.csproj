@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="eventcollector">
+      <HintPath>..\..\..\eventcollector\src\obj\Debug\netstandard2.0\eventcollector.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.ServiceFabric.Data, Version=6.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=AMD64">
       <HintPath>..\packages\Microsoft.ServiceFabric.Data.3.3.624\lib\net461\Microsoft.ServiceFabric.Data.dll</HintPath>
     </Reference>
@@ -77,15 +80,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GenericUtils.cs" />
     <Compile Include="NotifyTransactionAppliedEvent.cs" />
     <Compile Include="ReliableCollectionChange.cs" />
     <Compile Include="ChangeColletor.cs" />
-    <Compile Include="IEventCollector.cs" />
     <Compile Include="IHealthStore.cs" />
     <Compile Include="ISource.cs" />
     <Compile Include="ISourceFactory.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReliableStateKind.cs" />
     <Compile Include="ServiceFabricSource.cs" />
     <Compile Include="SouceFactory.cs" />
     <Compile Include="EnumDefinitions.cs" />

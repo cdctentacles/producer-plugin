@@ -8,8 +8,6 @@ namespace ProducerPlugin
 {
     public interface IHealthStore
     {
-
-        // Functions like post warning, health status and all.--> Need to look at the service fabric health store implementation before 
-        // start writing this.
+        // Need to discuss what to do here.
     }
 }

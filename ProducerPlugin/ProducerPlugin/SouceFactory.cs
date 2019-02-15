@@ -4,12 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.ServiceFabric.Preview;
+using Microsoft.ServiceFabric.Data;
+using CDC.EventCollector;
 
 namespace ProducerPlugin
 {
-    class ServiceFabricSourceFactory
+    class ServiceFabricSourceFactory  // It should have been in Service fabric Source factory.
     {
-        ServiceFabricSourceFactory(StateManager stateManager)
+        
+        // Need to check the correct format here.
+        ServiceFabricSourceFactory()
         {
             this.stateManager = stateManager;
         }
