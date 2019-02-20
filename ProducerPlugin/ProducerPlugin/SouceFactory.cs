@@ -9,17 +9,29 @@ using CDC.EventCollector;
 
 namespace ProducerPlugin
 {
-    class ServiceFabricSourceFactory  // It should have been in Service fabric Source factory.
+    internal class SourceFactory
     {
-        
+
+        public EnumDefinitions.SourceType sourceType;
         // Need to check the correct format here.
-        ServiceFabricSourceFactory()
+        public SourceFactory(EnumDefinitions.SourceType sourceType)
         {
-            this.stateManager = stateManager;
+            this.sourceType = sourceType;
         }
-        public ISource CreateSource(IEventCollector collector, IHealthStore healthStore)
+        public Source CreateSource(IEventCollector collector, IHealthStore healthStore, string sourceName)
         {
-            return new ServiceFabricSource(collector, healthStore, stateManager);
+            switch(this.sourceType)
+            {
+
+                case EnumDefinitions.SourceType.ServiceFabric:
+                    {
+                        return new ServiceFabricSource(collector, healthStore, sourceName);
+                    }
+                case EnumDefinitions.SourceType.Postgress:
+                case EnumDefinitions.SourceType.ElasticSearch:
+                default:
+                    throw new NotImplementedException();
+            }
         }
     }
 }

@@ -23,15 +23,15 @@ namespace ProducerPlugin
         internal ServiceFabricSource(IEventCollector collector, IHealthStore healthStore, string sourceName):base (collector, healthStore, sourceName)
         {
             this.SourceType = EnumDefinitions.SourceType.ServiceFabric;
-            // Need to find some way to get stateManagerObject here.
             this.changeCollector = new ChangeCollector();
         }
 
 
-        public void RegisterEventCollector(Guid partitionId)
+        public void RegisterEventCollector(Guid partitionId, ReliableStateManager stateManager)
         {
             // Here we registered with the event collector.
             this.partitionId = partitionId;
+            this.StateManager = stateManager;
             this.StateManager.TransactionChanged += this.OnTransactionChangedHandler;
             this.StateManager.StateManagerChanged += this.OnStateManagerChangedHandler;
         }
@@ -40,7 +40,6 @@ namespace ProducerPlugin
         {
             if (e.Action == NotifyTransactionChangedAction.Commit)
             {
-                // Need to get all the changes and give it to the event collector.
                 var allEvents = changeCollector.GetAllChanges();
                 var trAppliedEvent = new NotifyTransactionAppliedEvent(e.Transaction, allEvents);
                 string eventString = JsonConvert.SerializeObject(trAppliedEvent);
@@ -48,6 +47,9 @@ namespace ProducerPlugin
                 long currentLsn = e.Transaction.CommitSequenceNumber;
                 EventCollector.TransactionApplied(this.partitionId, previousLsn, currentLsn, byteStream);
                 previousLsn = currentLsn;
+
+                // Flush previous items.
+                this.changeCollector.CreateNew();
             }
         }
 

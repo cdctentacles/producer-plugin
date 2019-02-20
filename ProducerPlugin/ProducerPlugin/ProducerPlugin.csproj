@@ -81,12 +81,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GenericUtils.cs" />
+    <Compile Include="NotifyRebuildEvent.cs" />
     <Compile Include="NotifyTransactionAppliedEvent.cs" />
     <Compile Include="ReliableCollectionChange.cs" />
     <Compile Include="ChangeColletor.cs" />
     <Compile Include="IHealthStore.cs" />
     <Compile Include="ISource.cs" />
-    <Compile Include="ISourceFactory.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReliableStateKind.cs" />
