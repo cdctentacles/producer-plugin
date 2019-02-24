@@ -18,11 +18,11 @@ To specify path for built binaries:
 .\build.ps1 -OutputPath "<OutputPath>"
 ```
 
-# To Do:
+## To Do:
 1. Write ProducerPlugin.test
 2. Finalize Target framework(NETcore or .NETFramework)
 
-# Limitations
+## Limitations
 1. Rebuild Events are not considered till now.
 2. EventCollector's path is hardcoded in csproj file
 
