@@ -9,7 +9,6 @@
     <RootNamespace>ProducerPlugin</RootNamespace>
     <AssemblyName>ProducerPlugin</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
@@ -85,18 +84,19 @@
     <Compile Include="NotifyTransactionAppliedEvent.cs" />
     <Compile Include="ReliableCollectionChange.cs" />
     <Compile Include="ChangeColletor.cs" />
-    <Compile Include="IHealthStore.cs" />
     <Compile Include="ISource.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReliableStateKind.cs" />
     <Compile Include="ServiceFabricSource.cs" />
-    <Compile Include="SouceFactory.cs" />
+    <Compile Include="ServiceFabricSouceFactory.cs" />
     <Compile Include="EnumDefinitions.cs" />
     <Compile Include="Source.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <Target Name="Display messages">
+    <Message Text="Project File Name = $(MSBuildToolsPath)" />
+  </Target>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
