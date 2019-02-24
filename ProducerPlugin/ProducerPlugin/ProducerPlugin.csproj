@@ -96,11 +96,5 @@
     <Compile Include="EnumDefinitions.cs" />
     <Compile Include="Source.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <Target Name="Display messages">
-    <Message Text="Project File Name = $(MSBuildToolsPath)" />
-  </Target>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
