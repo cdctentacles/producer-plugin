@@ -9,19 +9,14 @@ namespace ProducerPlugin
     internal class ChangeCollector
     {
         internal Dictionary<string, List<ReliableCollectionChange>> eventDict;
-        private object wrlock;
 
         internal ChangeCollector()
         {
-            wrlock = new object();
         }
       
         internal void CreateNew()
         {
-            lock(wrlock)
-            {
-                this.eventDict = new Dictionary<string, List<ReliableCollectionChange>>();
-            }
+            this.eventDict = new Dictionary<string, List<ReliableCollectionChange>>();
         }
 
         internal List<EventArgs> GetAllChanges()
@@ -44,14 +39,11 @@ namespace ProducerPlugin
         {
             // It will always be called when eventDict is not null.
             var change = new ReliableCollectionChange(stateName, eventArgs);
-            lock(wrlock)
+            if (!eventDict.ContainsKey(stateName))
             {
-                if (!eventDict.ContainsKey(stateName))
-                {
-                    eventDict[stateName] = new List<ReliableCollectionChange>();
-                }
-                eventDict[stateName].Add(change);
+                eventDict[stateName] = new List<ReliableCollectionChange>();
             }
+            eventDict[stateName].Add(change);
             return;
         }
     }

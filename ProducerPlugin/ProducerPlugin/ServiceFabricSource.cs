@@ -17,7 +17,7 @@ namespace ProducerPlugin
     {
         internal ReliableStateManager StateManager;
         private ChangeCollector changeCollector;
-        private long previousLsn = Int32.MinValue;
+        private long previousLsn = long.MinValue;
         private Guid partitionId;
 
         internal ServiceFabricSource(IEventCollector collector, IHealthStore healthStore, string sourceName,

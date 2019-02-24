@@ -84,7 +84,6 @@
     <Compile Include="NotifyTransactionAppliedEvent.cs" />
     <Compile Include="ReliableCollectionChange.cs" />
     <Compile Include="ChangeColletor.cs" />
-    <Compile Include="ISource.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReliableStateKind.cs" />
     <Compile Include="ServiceFabricSource.cs" />
