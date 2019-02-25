@@ -19,7 +19,7 @@ namespace ProducerPlugin
         }
         public Source CreateSource(IEventCollector collector, string sourceName, Guid  partitionId)
         {
-            return new ServiceFabricSource(collector, healthStore, sourceName, stateManager, partitionId);
+            return new ServiceFabricSource(collector, sourceName, stateManager, partitionId);
         }
     }
 }
