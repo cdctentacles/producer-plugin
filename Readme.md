@@ -21,6 +21,7 @@ To specify path for built binaries:
 ## To Do:
 1. Write ProducerPlugin.test
 2. Finalize Target framework(NETcore or .NETFramework)
+3. Integrate with HealthStore.
 
 ## Limitations
 1. Rebuild Events are not considered till now.

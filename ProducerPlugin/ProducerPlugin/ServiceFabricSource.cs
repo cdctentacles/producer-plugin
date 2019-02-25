@@ -21,7 +21,7 @@ namespace ProducerPlugin
         private Guid partitionId;
 
         internal ServiceFabricSource(IEventCollector collector, string sourceName,
-            ReliableStateManager stateManager, Guid partitionId):base (collector, healthStore, sourceName)
+            ReliableStateManager stateManager, Guid partitionId):base (collector, sourceName)
         {
             this.SourceType = EnumDefinitions.SourceType.ServiceFabric;
             this.changeCollector = new ChangeCollector();

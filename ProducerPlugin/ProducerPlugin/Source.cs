@@ -12,20 +12,17 @@ namespace ProducerPlugin
     internal class Source   
     {
         internal IEventCollector EventCollector;
-        public IHealthStore HealthStore;
         private readonly string SourceName;
 
         internal EnumDefinitions.SourceType SourceType;
 
         private Guid ServiceId; 
 
-        internal Source(IEventCollector eventCollector, IHealthStore healthStore, string sourceName)
+        internal Source(IEventCollector eventCollector, string sourceName)
         {
             this.EventCollector = eventCollector;
-            this.HealthStore = healthStore;
             this.ServiceId = new Guid();
             this.SourceName = sourceName;
         }
-
     }
 }
