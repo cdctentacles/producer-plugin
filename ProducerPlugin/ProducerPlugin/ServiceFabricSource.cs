@@ -20,7 +20,7 @@ namespace ProducerPlugin
         private long previousLsn = long.MinValue;
         private Guid partitionId;
 
-        internal ServiceFabricSource(IEventCollector collector, IHealthStore healthStore, string sourceName,
+        internal ServiceFabricSource(IEventCollector collector, string sourceName,
             ReliableStateManager stateManager, Guid partitionId):base (collector, healthStore, sourceName)
         {
             this.SourceType = EnumDefinitions.SourceType.ServiceFabric;

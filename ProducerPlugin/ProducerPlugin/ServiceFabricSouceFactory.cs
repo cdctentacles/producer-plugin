@@ -17,7 +17,7 @@ namespace ProducerPlugin
         {
             this.stateManager = stateManager;
         }
-        public Source CreateSource(IEventCollector collector, IHealthStore healthStore, string sourceName, Guid  partitionId)
+        public Source CreateSource(IEventCollector collector, string sourceName, Guid  partitionId)
         {
             return new ServiceFabricSource(collector, healthStore, sourceName, stateManager, partitionId);
         }
