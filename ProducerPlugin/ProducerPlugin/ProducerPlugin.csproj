@@ -12,6 +12,7 @@
     <Compile Include="ReliableCollectionChange.cs" />
     <Compile Include="ChangeColletor.cs" />
     <Compile Include="ReliableStateKind.cs" />
+    <Compile Include="ServiceFabricHealthStore.cs" />
     <Compile Include="ServiceFabricSource.cs" />
     <Compile Include="ServiceFabricSouceFactory.cs" />
     <Compile Include="EnumDefinitions.cs" />

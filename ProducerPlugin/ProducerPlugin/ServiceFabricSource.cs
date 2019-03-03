@@ -15,13 +15,13 @@ namespace ProducerPlugin
 {
     internal class ServiceFabricSource : Source
     {
-        internal ReliableStateManager StateManager;
+        internal IReliableStateManager StateManager;
         private ChangeCollector changeCollector;
         private long previousLsn = long.MinValue;
         private Guid partitionId;
 
         internal ServiceFabricSource(IEventCollector collector, string sourceName,
-            ReliableStateManager stateManager, Guid partitionId):base (collector, sourceName)
+            IReliableStateManager stateManager, Guid partitionId):base (collector, sourceName)
         {
             this.SourceType = EnumDefinitions.SourceType.ServiceFabric;
             this.changeCollector = new ChangeCollector();

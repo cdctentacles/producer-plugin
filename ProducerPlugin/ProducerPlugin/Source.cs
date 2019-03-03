@@ -9,7 +9,7 @@ namespace ProducerPlugin
 {
 
     // This is the source class which will implement the ISource interface.
-    internal class Source : ISource
+    public class Source : ISource
     {
         internal IEventCollector EventCollector;
         private readonly string SourceName;

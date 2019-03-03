@@ -9,17 +9,22 @@ using CDC.EventCollector;
 
 namespace ProducerPlugin
 {
-    internal class ServiceFabricSourceFactory
+    public class ServiceFabricSourceFactory : ISourceFactory
     {
-        internal ReliableStateManager stateManager;
-        // Need to check the correct format here.
-        public ServiceFabricSourceFactory(ReliableStateManager stateManager)
+        internal IReliableStateManager stateManager;
+        Guid partitionId;
+        String sourceName;
+
+        public ServiceFabricSourceFactory(IReliableStateManager stateManager, Guid partitionId, String sourceName)
         {
             this.stateManager = stateManager;
+            this.partitionId = partitionId;
+            this.sourceName = sourceName;
         }
-        public Source CreateSource(IEventCollector collector, string sourceName, Guid  partitionId)
+
+        public ISource CreateSource(IEventCollector collector, IHealthStore healthStore)
         {
-            return new ServiceFabricSource(collector, sourceName, stateManager, partitionId);
+            return new ServiceFabricSource(collector, this.sourceName, this.stateManager, this.partitionId);
         }
     }
 }
