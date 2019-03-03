@@ -95,7 +95,7 @@ namespace ProducerPlugin
             dictionary.DictionaryChanged += this.OnDictionaryChangedHandler;
         }
 
-        public async Task OnDictionaryRebuildNotificationHandlerAsync<TKey, TValue>(
+        public Task OnDictionaryRebuildNotificationHandlerAsync<TKey, TValue>(
         IReliableDictionary<TKey, TValue> origin,
         NotifyDictionaryRebuildEventArgs<TKey, TValue> rebuildNotification)
         where TKey : IComparable<TKey>, IEquatable<TKey>
@@ -106,7 +106,8 @@ namespace ProducerPlugin
             var rebuildEvent = new NotifyRebuildEvent<TKey, TValue>(origin.Name.ToString(), rebuildNotification.State);
             string rebuildEventString = JsonConvert.SerializeObject(rebuildEvent);
             Byte[] byteStream = Encoding.ASCII.GetBytes(rebuildEventString);
-            EventCollector.TransactionApplied(this.partitionId, -1, -1, byteStream);
+            // handle the error case here.
+            return EventCollector.TransactionApplied(this.partitionId, -1, -1, byteStream);
         }
 
         public void OnDictionaryChangedHandler<TKey, TValue>(object sender, NotifyDictionaryChangedEventArgs<TKey, TValue> e)
