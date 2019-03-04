@@ -6,16 +6,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="ChangeColletor.cs" />
+    <Compile Include="EnumDefinitions.cs" />
     <Compile Include="GenericUtils.cs" />
     <Compile Include="NotifyRebuildEvent.cs" />
     <Compile Include="NotifyTransactionAppliedEvent.cs" />
     <Compile Include="ReliableCollectionChange.cs" />
-    <Compile Include="ChangeColletor.cs" />
     <Compile Include="ReliableStateKind.cs" />
     <Compile Include="ServiceFabricHealthStore.cs" />
     <Compile Include="ServiceFabricSource.cs" />
     <Compile Include="ServiceFabricSouceFactory.cs" />
-    <Compile Include="EnumDefinitions.cs" />
+    <Compile Include="ServiceFabricTarget.cs" />
     <Compile Include="Source.cs" />
   </ItemGroup>
 
