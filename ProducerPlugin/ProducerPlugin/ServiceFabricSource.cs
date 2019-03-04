@@ -39,7 +39,7 @@ namespace ProducerPlugin
                 var allEvents = changeCollector.GetAllChanges();
                 var trAppliedEvent = new NotifyTransactionAppliedEvent(e.Transaction, allEvents);
                 string eventString = JsonConvert.SerializeObject(trAppliedEvent);
-                Byte[] byteStream = Encoding.ASCII.GetBytes(eventString);
+                Byte[] byteStream = Encoding.UTF8.GetBytes(eventString);
                 long currentLsn = e.Transaction.CommitSequenceNumber;
                 EventCollector.TransactionApplied(this.partitionId, previousLsn, currentLsn, byteStream);
                 previousLsn = currentLsn;

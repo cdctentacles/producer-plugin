@@ -13,22 +13,22 @@ namespace ProducerPlugin
         internal ChangeCollector()
         {
         }
-      
+
         internal void CreateNew()
         {
             this.eventDict = new Dictionary<string, List<ReliableCollectionChange>>();
         }
 
-        internal List<EventArgs> GetAllChanges()
+        internal List<ReliableCollectionChange> GetAllChanges()
         {
             // It will be only called when we receive transaction applied event.
 
-            List<EventArgs> listOfEvents = new List<EventArgs>();
+            List<ReliableCollectionChange> listOfEvents = new List<ReliableCollectionChange>();
             foreach(var key in this.eventDict.Keys)
             {
                 foreach(var change in this.eventDict[key])
                 {
-                    listOfEvents.Add(change.eventArgs);
+                    listOfEvents.Add(change);
                 }
             }
 

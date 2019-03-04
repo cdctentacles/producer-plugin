@@ -9,13 +9,13 @@ namespace ProducerPlugin
 {
     public class NotifyTransactionAppliedEvent: EventArgs
     {
-        public ITransaction transaction;
-        public IEnumerable<EventArgs> changes; // Should it be Event Args??
+        public ITransaction Transaction;
+        public IEnumerable<ReliableCollectionChange> Changes;
 
-        public NotifyTransactionAppliedEvent(ITransaction transaction, IEnumerable<EventArgs> changes)
+        public NotifyTransactionAppliedEvent(ITransaction transaction, IEnumerable<ReliableCollectionChange> changes)
         {
-            this.transaction = transaction;
-            this.changes = changes;
+            this.Transaction = transaction;
+            this.Changes = changes;
         }
     }
 }

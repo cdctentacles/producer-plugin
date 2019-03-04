@@ -8,14 +8,14 @@ namespace ProducerPlugin
 {
     public class ReliableCollectionChange
     {
-        public string collectionName;
-        public EventArgs eventArgs;
+        public string CollectionName;
+        public EventArgs EventArgs;
 
 
         public ReliableCollectionChange(string name, EventArgs eventArgs)
         {
-            this.collectionName = name;
-            this.eventArgs = eventArgs;
+            this.CollectionName = name;
+            this.EventArgs = eventArgs;
          }
     }
 }

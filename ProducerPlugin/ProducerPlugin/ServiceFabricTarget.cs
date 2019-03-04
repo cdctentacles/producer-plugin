@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 using CDC.EventCollector;
 using Microsoft.ServiceFabric.Data;
+using Microsoft.ServiceFabric.Data.Collections;
+using Newtonsoft.Json;
 
 namespace ProducerPlugin
 {
@@ -27,11 +30,19 @@ namespace ProducerPlugin
 
             foreach (var transactionToApply in partitionChange.Transactions)
             {
+                // deserialize transactionToApply.Data
+                var data = Encoding.UTF8.GetString(transactionToApply.Data);
+                var deserializedData = JsonConvert.DeserializeObject<NotifyTransactionAppliedEvent>(data);
+
                 using (var tx = this.stateManager.CreateTransaction())
                 {
-                    // deserialize transactionToApply.Data
                     // Find which Dictionary is this change for.
-                    // Find which key/value is this change for.
+                    foreach (var change in deserializedData.Changes)
+                    {
+                        var dictName = change.CollectionName;
+                        // var dictionary = await this.stateManager.GetOrAddAsync<IReliableDictionary<X, Y>>(tx, dictName);
+                    }
+
                     await tx.CommitAsync();
                 }
             }
