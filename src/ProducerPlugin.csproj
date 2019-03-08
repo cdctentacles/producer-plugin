@@ -29,6 +29,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../../eventcollector/src/eventcollector.csproj" />
+    <ProjectReference Include="../../eventcollector/src/eventcollector.csproj" />
   </ItemGroup>
 </Project>
