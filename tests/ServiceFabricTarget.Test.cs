@@ -28,8 +28,11 @@ namespace sf.cdc.plugin.tests
 
             var notifyEvent = new NotifyTransactionAppliedEvent(transaction, changes);
 
-            var encodedEvent = JsonConvert.SerializeObject(notifyEvent);
-            var decodedEvent = JsonConvert.DeserializeObject<NotifyTransactionAppliedEvent>(encodedEvent);
+
+            var encodedEvent = JsonConvert.SerializeObject(notifyEvent, this.jsonSettings);
+            var decodedEvent = JsonConvert.DeserializeObject<NotifyTransactionAppliedEvent>(encodedEvent, this.jsonSettings);
         }
+
+        JsonSerializerSettings jsonSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
     }
 }
