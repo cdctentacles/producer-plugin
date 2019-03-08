@@ -7,16 +7,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="TransactionMock.cs" />
     <Compile Include="ServiceFabricTarget.Test.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include= "Microsoft.ServiceFabric.Data" Version = "3.3.624" />
+    <PackageReference Include= "Microsoft.ServiceFabric.Data.Extensions" Version = "1.4.624" />
+    <PackageReference Include= "Microsoft.ServiceFabric.Data.Interfaces" Version = "3.3.624" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
     <PackageReference Include="xunit" Version="2.3.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+    <PackageReference Include= "Newtonsoft.Json" Version = "12.0.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="../src/ProducerPlugin.csproj" />
     <ProjectReference Include="../../eventcollector/src/eventcollector.csproj" />
     <ProjectReference Include="../../eventcollector/tests/common/eventcollector.common.tests.csproj" />
   </ItemGroup>
