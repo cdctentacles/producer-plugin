@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using CDC.EventCollector;
+using Microsoft.ServiceFabric.Data.Collections;
 using Microsoft.ServiceFabric.Data.Notifications;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -17,19 +18,14 @@ namespace sf.cdc.plugin.tests
 {
     public class ServiceFabricTargetTest
     {
+        IList<Type> knownTypes;
+
         public ServiceFabricTargetTest()
         {
-            var knownTypeBinder = new KnownTypesBinder();
-            // Since we don't know all ReliableDictionaries and
-            // on backup cluster, we are the one creating the data
-            // we need to ask customer to register with us all the IReliableDictionary.
-            knownTypeBinder.KnownTypes = new List<Type>() {
-                typeof(NotifyDictionaryItemAddedEventArgs<Guid, long>),
+            this.knownTypes = new List<Type>() {
+                typeof(IReliableDictionary<Guid, long>),
                 typeof(TransactionMock),
             };
-
-            jsonSettings.SerializationBinder = knownTypeBinder;
-            jsonSettings.TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full;
         }
 
         [Fact]
@@ -44,9 +40,11 @@ namespace sf.cdc.plugin.tests
             changes.Add(new ReliableCollectionChange("mydict", itemAddedEventArg));
 
             var notifyEvent = new NotifyTransactionAppliedEvent(transaction, changes);
-            var encodedEvent = JsonConvert.SerializeObject(notifyEvent, this.jsonSettings);
 
-            var decodedEvent = JsonConvert.DeserializeObject<NotifyTransactionAppliedEvent>(encodedEvent, this.jsonSettings);
+            var jsonMessageConverter = new JsonMessageConverter(this.knownTypes);
+            var encodedEvent = jsonMessageConverter.Serialize(notifyEvent);
+            var decodedEvent = jsonMessageConverter.Deserialize<NotifyTransactionAppliedEvent>(encodedEvent);
+
             Assert.Equal(100, decodedEvent.Transaction.CommitSequenceNumber);
             Assert.Equal(200, decodedEvent.Transaction.TransactionId);
             Assert.Equal(1, decodedEvent.Changes.Count());
@@ -57,27 +55,6 @@ namespace sf.cdc.plugin.tests
             var decodedItemAddedArg = firstChange.EventArgs as NotifyDictionaryItemAddedEventArgs<Guid, long>;
             Assert.Equal(dictKey, decodedItemAddedArg.Key);
             Assert.Equal(dictValue, decodedItemAddedArg.Value);
-        }
-
-        JsonSerializerSettings jsonSettings = new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.Auto
-            };
-    }
-
-    public class KnownTypesBinder : ISerializationBinder
-    {
-        public IList<Type> KnownTypes { get; set; }
-
-        public Type BindToType(string assemblyName, string typeName)
-        {
-            return KnownTypes.SingleOrDefault(t => t.FullName == typeName && t.Assembly.GetName().Name == assemblyName);
-        }
-
-        public void BindToName(Type serializedType, out string assemblyName, out string typeName)
-        {
-            assemblyName = serializedType.Assembly.GetName().Name;
-            typeName = serializedType.FullName;
         }
     }
 }

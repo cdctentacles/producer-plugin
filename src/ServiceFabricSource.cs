@@ -19,9 +19,11 @@ namespace ProducerPlugin
         private ChangeCollector changeCollector;
         private long previousLsn = long.MinValue;
         private Guid partitionId;
+        private IMessageConverter messageConverter;
 
         internal ServiceFabricSource(IEventCollector collector, string sourceName,
-            IReliableStateManager stateManager, Guid partitionId):base (collector, sourceName)
+            IReliableStateManager stateManager, Guid partitionId, IMessageConverter messageConverter)
+            : base (collector, sourceName)
         {
             this.SourceType = EnumDefinitions.SourceType.ServiceFabric;
             this.changeCollector = new ChangeCollector();
@@ -30,6 +32,7 @@ namespace ProducerPlugin
             this.StateManager = stateManager;
             this.StateManager.TransactionChanged += this.OnTransactionChangedHandler;
             this.StateManager.StateManagerChanged += this.OnStateManagerChangedHandler;
+            this.messageConverter = messageConverter;
         }
 
         private void OnTransactionChangedHandler(object sender, NotifyTransactionChangedEventArgs e)
@@ -38,9 +41,9 @@ namespace ProducerPlugin
             {
                 var allEvents = changeCollector.GetAllChanges();
                 var trAppliedEvent = new NotifyTransactionAppliedEvent(e.Transaction, allEvents);
-                string eventString = JsonConvert.SerializeObject(trAppliedEvent);
-                Byte[] byteStream = Encoding.UTF8.GetBytes(eventString);
+                Byte[] byteStream = messageConverter.Serialize(trAppliedEvent);
                 long currentLsn = e.Transaction.CommitSequenceNumber;
+                // handle the failure of Task here.
                 EventCollector.TransactionApplied(this.partitionId, previousLsn, currentLsn, byteStream);
                 previousLsn = currentLsn;
 
@@ -104,8 +107,7 @@ namespace ProducerPlugin
             var enumerator = rebuildNotification.State.GetAsyncEnumerator();
             // We will send the event as it is. But the previousLsn and nextLsn would be -1.
             var rebuildEvent = new NotifyRebuildEvent<TKey, TValue>(origin.Name.ToString(), rebuildNotification.State);
-            string rebuildEventString = JsonConvert.SerializeObject(rebuildEvent);
-            Byte[] byteStream = Encoding.ASCII.GetBytes(rebuildEventString);
+            Byte[] byteStream = messageConverter.Serialize(rebuildEvent);
             // handle the error case here.
             return EventCollector.TransactionApplied(this.partitionId, -1, -1, byteStream);
         }

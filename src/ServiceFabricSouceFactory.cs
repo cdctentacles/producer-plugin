@@ -14,17 +14,21 @@ namespace ProducerPlugin
         internal IReliableStateManager stateManager;
         Guid partitionId;
         String sourceName;
+        IMessageConverter messageConverter;
 
-        public ServiceFabricSourceFactory(IReliableStateManager stateManager, Guid partitionId, String sourceName)
+        public ServiceFabricSourceFactory(IReliableStateManager stateManager, Guid partitionId,
+            String sourceName, IMessageConverter messageConverter)
         {
             this.stateManager = stateManager;
             this.partitionId = partitionId;
             this.sourceName = sourceName;
+            this.messageConverter = messageConverter;
         }
 
         public ISource CreateSource(IEventCollector collector, IHealthStore healthStore)
         {
-            return new ServiceFabricSource(collector, this.sourceName, this.stateManager, this.partitionId);
+            return new ServiceFabricSource(collector, this.sourceName, this.stateManager,
+                this.partitionId, this.messageConverter);
         }
     }
 }

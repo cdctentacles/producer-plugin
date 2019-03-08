@@ -9,6 +9,9 @@
     <Compile Include="ChangeColletor.cs" />
     <Compile Include="EnumDefinitions.cs" />
     <Compile Include="GenericUtils.cs" />
+    <Compile Include="IMessageConverter.cs" />
+    <Compile Include="JsonMessageConverter.cs" />
+    <Compile Include="KnownTypesBinder.cs" />
     <Compile Include="NotifyRebuildEvent.cs" />
     <Compile Include="NotifyTransactionAppliedEvent.cs" />
     <Compile Include="ReliableCollectionChange.cs" />
