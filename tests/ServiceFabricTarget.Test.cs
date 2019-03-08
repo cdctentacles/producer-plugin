@@ -20,6 +20,9 @@ namespace sf.cdc.plugin.tests
         public ServiceFabricTargetTest()
         {
             var knownTypeBinder = new KnownTypesBinder();
+            // Since we don't know all ReliableDictionaries and
+            // on backup cluster, we are the one creating the data
+            // we need to ask customer to register with us all the IReliableDictionary.
             knownTypeBinder.KnownTypes = new List<Type>() {
                 typeof(NotifyDictionaryItemAddedEventArgs<Guid, long>),
                 typeof(TransactionMock),
@@ -41,11 +44,19 @@ namespace sf.cdc.plugin.tests
             changes.Add(new ReliableCollectionChange("mydict", itemAddedEventArg));
 
             var notifyEvent = new NotifyTransactionAppliedEvent(transaction, changes);
-
-
             var encodedEvent = JsonConvert.SerializeObject(notifyEvent, this.jsonSettings);
-            Console.WriteLine(encodedEvent);
+
             var decodedEvent = JsonConvert.DeserializeObject<NotifyTransactionAppliedEvent>(encodedEvent, this.jsonSettings);
+            Assert.Equal(100, decodedEvent.Transaction.CommitSequenceNumber);
+            Assert.Equal(200, decodedEvent.Transaction.TransactionId);
+            Assert.Equal(1, decodedEvent.Changes.Count());
+
+            var firstChange = decodedEvent.Changes.First();
+            Assert.Equal("mydict", firstChange.CollectionName);
+            Assert.True(firstChange.EventArgs is NotifyDictionaryItemAddedEventArgs<Guid, long>);
+            var decodedItemAddedArg = firstChange.EventArgs as NotifyDictionaryItemAddedEventArgs<Guid, long>;
+            Assert.Equal(dictKey, decodedItemAddedArg.Key);
+            Assert.Equal(dictValue, decodedItemAddedArg.Value);
         }
 
         JsonSerializerSettings jsonSettings = new JsonSerializerSettings
