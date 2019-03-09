@@ -25,7 +25,6 @@ namespace ProducerPlugin
             IReliableStateManager stateManager, Guid partitionId, IMessageConverter messageConverter)
             : base (collector, sourceName)
         {
-            this.SourceType = EnumDefinitions.SourceType.ServiceFabric;
             this.changeCollector = new ChangeCollector();
             // Here we registered with the event collector.
             this.partitionId = partitionId;

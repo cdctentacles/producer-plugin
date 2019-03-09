@@ -8,43 +8,33 @@ namespace ProducerPlugin
 {
     internal class ChangeCollector
     {
-        internal Dictionary<string, List<ReliableCollectionChange>> eventDict;
+        internal Dictionary<string, ReliableCollectionChange> eventDict;
 
         internal ChangeCollector()
         {
+            this.eventDict = new Dictionary<string, ReliableCollectionChange>();
         }
 
         internal void CreateNew()
         {
-            this.eventDict = new Dictionary<string, List<ReliableCollectionChange>>();
+            this.eventDict = new Dictionary<string, ReliableCollectionChange>();
         }
 
         internal List<ReliableCollectionChange> GetAllChanges()
         {
-            // It will be only called when we receive transaction applied event.
-
-            List<ReliableCollectionChange> listOfEvents = new List<ReliableCollectionChange>();
-            foreach(var key in this.eventDict.Keys)
-            {
-                foreach(var change in this.eventDict[key])
-                {
-                    listOfEvents.Add(change);
-                }
-            }
-
-            return listOfEvents;
+            return new List<ReliableCollectionChange>(this.eventDict.Values);
         }
 
         internal void AddNewEvent(string stateName, EventArgs eventArgs)
         {
-            // It will always be called when eventDict is not null.
-            var change = new ReliableCollectionChange(stateName, eventArgs);
             if (!eventDict.ContainsKey(stateName))
             {
-                eventDict[stateName] = new List<ReliableCollectionChange>();
+                eventDict[stateName] = new ReliableCollectionChange(stateName, new List<EventArgs>() { eventArgs } );
             }
-            eventDict[stateName].Add(change);
-            return;
+            else
+            {
+                eventDict[stateName].AddNewEvent(eventArgs);
+            }
         }
     }
 }

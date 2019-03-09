@@ -46,7 +46,7 @@ namespace sf.cdc.plugin.tests
             var dictValue = new User("ashish");
             var itemAddedEventArg = new NotifyDictionaryItemAddedEventArgs<Guid, User>(transaction, dictKey, dictValue);
 
-            changes.Add(new ReliableCollectionChange("mydict", itemAddedEventArg));
+            changes.Add(new ReliableCollectionChange("mydict", new List<EventArgs>() { itemAddedEventArg }));
 
             var notifyEvent = new NotifyTransactionAppliedEvent(transaction, changes);
 
@@ -58,10 +58,14 @@ namespace sf.cdc.plugin.tests
             Assert.Equal(200, decodedEvent.Transaction.TransactionId);
             Assert.Equal(1, decodedEvent.Changes.Count());
 
-            var firstChange = decodedEvent.Changes.First();
-            Assert.Equal("mydict", firstChange.CollectionName);
-            Assert.True(firstChange.EventArgs is NotifyDictionaryItemAddedEventArgs<Guid, User>);
-            var decodedItemAddedArg = firstChange.EventArgs as NotifyDictionaryItemAddedEventArgs<Guid, User>;
+            var firstRCChange = decodedEvent.Changes.First();
+            Assert.Equal("mydict", firstRCChange.CollectionName);
+            Assert.Equal(1, firstRCChange.EventArgs.Count());
+
+            var firstEventArg = firstRCChange.EventArgs.First();
+            Assert.True(firstEventArg is NotifyDictionaryItemAddedEventArgs<Guid, User>);
+            var decodedItemAddedArg = firstEventArg as NotifyDictionaryItemAddedEventArgs<Guid, User>;
+
             Assert.Equal(dictKey, decodedItemAddedArg.Key);
             Assert.Equal(dictValue.name, decodedItemAddedArg.Value.name);
         }

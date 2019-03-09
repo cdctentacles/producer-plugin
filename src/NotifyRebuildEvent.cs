@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ProducerPlugin
 {
-    public class NotifyRebuildEvent<TKey, TValue>
+    internal class NotifyRebuildEvent<TKey, TValue>
         where TKey : IComparable<TKey>, IEquatable<TKey>
     {
         public string stateName;

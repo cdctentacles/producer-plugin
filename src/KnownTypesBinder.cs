@@ -7,8 +7,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace ProducerPlugin
 {
-    // make this internal and consume in tests.
-    public class KnownTypesBinder : ISerializationBinder
+    internal class KnownTypesBinder : ISerializationBinder
     {
         private IList<Type> knownTypes { get; set; }
 

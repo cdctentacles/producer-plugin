@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <Compile Include="ChangeColletor.cs" />
-    <Compile Include="EnumDefinitions.cs" />
+    <Compile Include="Friends.cs" />
     <Compile Include="GenericUtils.cs" />
     <Compile Include="IMessageConverter.cs" />
     <Compile Include="JsonMessageConverter.cs" />
@@ -19,7 +19,7 @@
     <Compile Include="ServiceFabricHealthStore.cs" />
     <Compile Include="ServiceFabricSource.cs" />
     <Compile Include="ServiceFabricSouceFactory.cs" />
-    <Compile Include="ServiceFabricTarget.cs" />
+    <Compile Include="ServiceFabricPersistentCollector.cs" />
     <Compile Include="Source.cs" />
   </ItemGroup>
 

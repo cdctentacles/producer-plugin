@@ -6,16 +6,21 @@ using System.Threading.Tasks;
 
 namespace ProducerPlugin
 {
-    public class ReliableCollectionChange
+    internal class ReliableCollectionChange
     {
         public string CollectionName;
-        public EventArgs EventArgs;
+        public List<EventArgs> EventArgs;
 
 
-        public ReliableCollectionChange(string name, EventArgs eventArgs)
+        public ReliableCollectionChange(string name, List<EventArgs> eventArgs)
         {
             this.CollectionName = name;
             this.EventArgs = eventArgs;
-         }
+        }
+
+        public void AddNewEvent(EventArgs eventArgs)
+        {
+            this.EventArgs.Add(eventArgs);
+        }
     }
 }

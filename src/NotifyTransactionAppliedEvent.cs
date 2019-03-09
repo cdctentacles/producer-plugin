@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace ProducerPlugin
 {
-    public class NotifyTransactionAppliedEvent : EventArgs
+    internal class NotifyTransactionAppliedEvent : EventArgs
     {
         public ITransaction Transaction;
-        public IEnumerable<ReliableCollectionChange> Changes;
+        public List<ReliableCollectionChange> Changes;
 
-        public NotifyTransactionAppliedEvent(ITransaction transaction, IEnumerable<ReliableCollectionChange> changes)
+        public NotifyTransactionAppliedEvent(ITransaction transaction, List<ReliableCollectionChange> changes)
         {
             this.Transaction = transaction;
             this.Changes = changes;
