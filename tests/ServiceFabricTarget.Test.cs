@@ -16,6 +16,15 @@ using Xunit;
 
 namespace sf.cdc.plugin.tests
 {
+    class User
+    {
+        public string name;
+        public User(string n)
+        {
+            name = n;
+        }
+    }
+
     public class ServiceFabricTargetTest
     {
         IList<Type> knownTypes;
@@ -23,19 +32,19 @@ namespace sf.cdc.plugin.tests
         public ServiceFabricTargetTest()
         {
             this.knownTypes = new List<Type>() {
-                typeof(IReliableDictionary<Guid, long>),
+                typeof(IReliableDictionary<Guid, User>),
                 typeof(TransactionMock),
             };
         }
 
         [Fact]
-        public void DecodeMessages()
+        public void JsonMessageConverterTest()
         {
             var transaction = new TransactionMock(100, 200);
             var changes = new List<ReliableCollectionChange>();
             var dictKey = new Guid();
-            var dictValue = 400;
-            var itemAddedEventArg = new NotifyDictionaryItemAddedEventArgs<Guid, long>(transaction, dictKey, dictValue);
+            var dictValue = new User("ashish");
+            var itemAddedEventArg = new NotifyDictionaryItemAddedEventArgs<Guid, User>(transaction, dictKey, dictValue);
 
             changes.Add(new ReliableCollectionChange("mydict", itemAddedEventArg));
 
@@ -51,10 +60,10 @@ namespace sf.cdc.plugin.tests
 
             var firstChange = decodedEvent.Changes.First();
             Assert.Equal("mydict", firstChange.CollectionName);
-            Assert.True(firstChange.EventArgs is NotifyDictionaryItemAddedEventArgs<Guid, long>);
-            var decodedItemAddedArg = firstChange.EventArgs as NotifyDictionaryItemAddedEventArgs<Guid, long>;
+            Assert.True(firstChange.EventArgs is NotifyDictionaryItemAddedEventArgs<Guid, User>);
+            var decodedItemAddedArg = firstChange.EventArgs as NotifyDictionaryItemAddedEventArgs<Guid, User>;
             Assert.Equal(dictKey, decodedItemAddedArg.Key);
-            Assert.Equal(dictValue, decodedItemAddedArg.Value);
+            Assert.Equal(dictValue.name, decodedItemAddedArg.Value.name);
         }
     }
 }
