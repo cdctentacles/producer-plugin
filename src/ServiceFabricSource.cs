@@ -55,10 +55,12 @@ namespace ProducerPlugin
         {
             if (e.Action == NotifyStateManagerChangedAction.Rebuild)
             {
-                throw new NotImplementedException();
+                // throw new NotImplementedException();
             }
-
-            ProcessStateManagerSingleEntityNotification(e);
+            else
+            {
+                ProcessStateManagerSingleEntityNotification(e);
+            }
         }
 
         private void ProcessStateManagerSingleEntityNotification(NotifyStateManagerChangedEventArgs e)
@@ -102,13 +104,16 @@ namespace ProducerPlugin
         NotifyDictionaryRebuildEventArgs<TKey, TValue> rebuildNotification)
         where TKey : IComparable<TKey>, IEquatable<TKey>
         {
-            this.changeCollector.CreateNew();
-            var enumerator = rebuildNotification.State.GetAsyncEnumerator();
-            // We will send the event as it is. But the previousLsn and nextLsn would be -1.
-            var rebuildEvent = new NotifyRebuildEvent<TKey, TValue>(origin.Name.ToString(), rebuildNotification.State);
-            Byte[] byteStream = messageConverter.Serialize(rebuildEvent);
-            // handle the error case here.
-            return EventCollector.TransactionApplied(this.partitionId, -1, -1, byteStream);
+            // Not handling Rebuild event now.
+            return Task.CompletedTask;
+
+            // this.changeCollector.CreateNew();
+            // var enumerator = rebuildNotification.State.GetAsyncEnumerator();
+            // // We will send the event as it is. But the previousLsn and nextLsn would be -1.
+            // var rebuildEvent = new NotifyRebuildEvent<TKey, TValue>(origin.Name.ToString(), rebuildNotification.State);
+            // Byte[] byteStream = messageConverter.Serialize(rebuildEvent);
+            // // handle the error case here.
+            // return EventCollector.TransactionApplied(this.partitionId, -1, -1, byteStream);
         }
 
         public void OnDictionaryChangedHandler<TKey, TValue>(object sender, NotifyDictionaryChangedEventArgs<TKey, TValue> e)
