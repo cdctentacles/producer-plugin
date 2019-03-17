@@ -1,6 +1,6 @@
 ﻿using Microsoft.ServiceFabric.Data.Notifications;
 
-namespace LearningDeserialization
+namespace ProducerPlugin
 {
     public class NotifyDictionaryItemUpdatedEventArgsMock<TKey, TValue> : NotifyDictionaryTransactionalEventArgsMock<TKey, TValue>
     {
