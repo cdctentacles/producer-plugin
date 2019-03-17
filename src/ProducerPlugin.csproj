@@ -20,6 +20,7 @@
     <Compile Include="ServiceFabricSource.cs" />
     <Compile Include="ServiceFabricSouceFactory.cs" />
     <Compile Include="ServiceFabricPersistentCollector.cs" />
+    <Compile Include="TransactionMock.cs" />
     <Compile Include="Source.cs" />
   </ItemGroup>
 
