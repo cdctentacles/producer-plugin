@@ -22,6 +22,11 @@
     <Compile Include="ServiceFabricPersistentCollector.cs" />
     <Compile Include="TransactionMock.cs" />
     <Compile Include="Source.cs" />
+    <Compile Include="NotifyDictionaryClearEventArgsMock.cs" />
+    <Compile Include="NotifyDictionaryItemAddedEventArgsMock.cs" />
+    <Compile Include="NotifyDictionaryItemRemovedEventArgsMock.cs" />
+    <Compile Include="NotifyDictionaryItemUpdatedEventArgsMock.cs" />
+    <Compile Include="NotifyDictionaryTransactionalEventArgsMock.cs" />
   </ItemGroup>
 
   <ItemGroup>
