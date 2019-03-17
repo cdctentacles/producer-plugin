@@ -39,7 +39,8 @@ namespace ProducerPlugin
             if (e.Action == NotifyTransactionChangedAction.Commit)
             {
                 var allEvents = changeCollector.GetAllChanges();
-                var trAppliedEvent = new NotifyTransactionAppliedEvent(e.Transaction, allEvents);
+                var transactionMock = new TransactionMock(e.Transaction.TransactionId, e.Transaction.CommitSequenceNumber);
+                var trAppliedEvent = new NotifyTransactionAppliedEvent(transactionMock, allEvents);
                 Byte[] byteStream = messageConverter.Serialize(trAppliedEvent);
                 long currentLsn = e.Transaction.CommitSequenceNumber;
                 // handle the failure of Task here.
