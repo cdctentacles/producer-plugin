@@ -28,7 +28,7 @@ namespace ProducerPlugin
         public ISource CreateSource(IEventCollector collector, IHealthStore healthStore)
         {
             return new ServiceFabricSource(collector, this.sourceName, this.stateManager,
-                this.partitionId, this.messageConverter);
+                this.partitionId, this.messageConverter, healthStore);
         }
     }
 }
