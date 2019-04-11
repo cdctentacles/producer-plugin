@@ -45,7 +45,7 @@ namespace ProducerPlugin
             this.client.HealthManager.ReportHealth(report);
         }
 
-        public void WriteNoise(string msg)
+        public void WriteNoise(string msg, params string[] args)
         {
 
         }
