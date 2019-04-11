@@ -9,45 +9,40 @@ namespace ProducerPlugin
     public class ServiceFabricHealthStore : IHealthStore
     {
         private FabricClient client;
-        private string serviceManifestName;
         private Uri ApplicationName;
-        private string NodeName;
-            
 
         public ServiceFabricHealthStore(FabricClient client, string serviceManifestName, Uri applicationName, string nodeName)
         {
             this.client = client;
-            this.serviceManifestName = serviceManifestName;
             this.ApplicationName = applicationName;
-            this.NodeName = nodeName;
         }
-        public void WriteError(string msg)
+        public void WriteError(string msg, params string[] args)
         {
             HealthState state = HealthState.Error;
-            HealthInformation information = new HealthInformation("something", "something", state);
-            information.Description = msg;
-            HealthReport report = new DeployedServicePackageHealthReport(ApplicationName, serviceManifestName, NodeName, information);
+            HealthInformation information = new HealthInformation("ProducerPlugin", "ProducerPlugin_Health", state);
+            information.Description = string.Format(msg,args);
+            HealthReport report = new ApplicationHealthReport(ApplicationName, information);
             this.client.HealthManager.ReportHealth(report);
 
         }
 
-        public void WriteWarning(string msg)
+        public void WriteWarning(string msg, params string[] args)
         {
             HealthState state = HealthState.Warning;
-            HealthInformation information = new HealthInformation("something", "something", state);
-            information.Description = msg;
-            HealthReport report = new DeployedServicePackageHealthReport(ApplicationName, serviceManifestName, NodeName, information);
+            HealthInformation information = new HealthInformation("ProfucerPlugin", "ProducerPlugin_Health", state);
+            information.Description = string.Format(msg,args);
+            HealthReport report = new ApplicationHealthReport(ApplicationName, information);
+            // We can also use service Event source in addition to reporting health.
             this.client.HealthManager.ReportHealth(report);
         }
 
-        public void WriteInfo(string msg)
+        public void WriteInfo(string msg, params string[] args)
         {
             HealthState state = HealthState.Ok;
-            HealthInformation information = new HealthInformation("something", "something", state);
-            information.Description = msg;
-            HealthReport report = new DeployedServicePackageHealthReport(ApplicationName, serviceManifestName, NodeName, information);
+            HealthInformation information = new HealthInformation("ProfucerPlugin", "ProducerPlugin_Health", state);
+            information.Description = string.Format(msg,args);
+            HealthReport report = new ApplicationHealthReport(ApplicationName, information);
             this.client.HealthManager.ReportHealth(report);
-
         }
 
         public void WriteNoise(string msg)

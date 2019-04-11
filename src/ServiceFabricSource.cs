@@ -20,9 +20,10 @@ namespace ProducerPlugin
         private long previousLsn = long.MinValue;
         private Guid partitionId;
         private IMessageConverter messageConverter;
+        private ServiceFabricHealthStore healthStore;
 
         internal ServiceFabricSource(IEventCollector collector, string sourceName,
-            IReliableStateManager stateManager, Guid partitionId, IMessageConverter messageConverter)
+            IReliableStateManager stateManager, Guid partitionId, IMessageConverter messageConverter, ServiceFabricHealthStore healthStore)
             : base (collector, sourceName)
         {
             this.changeCollector = new ChangeCollector();
@@ -32,6 +33,8 @@ namespace ProducerPlugin
             this.StateManager.TransactionChanged += this.OnTransactionChangedHandler;
             this.StateManager.StateManagerChanged += this.OnStateManagerChangedHandler;
             this.messageConverter = messageConverter;
+            this.healthStore = healthStore;
+
         }
 
         private void OnTransactionChangedHandler(object sender, NotifyTransactionChangedEventArgs e)
@@ -44,7 +47,18 @@ namespace ProducerPlugin
                 Byte[] byteStream = messageConverter.Serialize(trAppliedEvent);
                 long currentLsn = e.Transaction.CommitSequenceNumber;
                 // handle the failure of Task here.
-                EventCollector.TransactionApplied(this.partitionId, previousLsn, currentLsn, byteStream);
+                try
+                {
+                    EventCollector.TransactionApplied(this.partitionId, previousLsn, currentLsn, byteStream);
+                    this.healthStore.WriteInfo("Transaction applied call on partition {0} succeeded " +
+                        "with previousLsn {1} and currentlsn {2}", partitionId.ToString(), previousLsn.ToString(), currentLsn.ToString());
+
+                }
+                catch (Exception ex)
+                {
+                    this.healthStore.WriteWarning("Producer plugin failed to post events to EventCollector " +
+                        "with exception  :{0}", ex.ToString());
+                }
                 previousLsn = currentLsn;
 
                 // Flush previous items.
@@ -119,7 +133,7 @@ namespace ProducerPlugin
 
         public void OnDictionaryChangedHandler<TKey, TValue>(object sender, NotifyDictionaryChangedEventArgs<TKey, TValue> e)
         where TKey : IComparable<TKey>, IEquatable<TKey>
-        {
+        {    
             var state = sender as IReliableState;
             this.changeCollector.AddNewEvent(state.Name.ToString(),e);
         }
