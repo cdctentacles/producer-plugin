@@ -20,10 +20,10 @@ namespace ProducerPlugin
         private long previousLsn = long.MinValue;
         private Guid partitionId;
         private IMessageConverter messageConverter;
-        private ServiceFabricHealthStore healthStore;
+        private IHealthStore healthStore;
 
         internal ServiceFabricSource(IEventCollector collector, string sourceName,
-            IReliableStateManager stateManager, Guid partitionId, IMessageConverter messageConverter, ServiceFabricHealthStore healthStore)
+            IReliableStateManager stateManager, Guid partitionId, IMessageConverter messageConverter, IHealthStore healthStore)
             : base (collector, sourceName)
         {
             this.changeCollector = new ChangeCollector();
